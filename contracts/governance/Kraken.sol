@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "contracts/core/AUpdatable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Kraken is TimelockController, AUpdatable {
+contract Kraken is TimelockController {
     mapping(bytes32 => mapping(address => int256)) private _votes;
     mapping(bytes32 => int256) private _results;
     ERC20[] _votingTokens;
@@ -105,13 +105,5 @@ contract Kraken is TimelockController, AUpdatable {
         )
     {
         super.executeBatch(targets, values, datas, predecessor, salt);
-    }
-
-    function transferOwnership(address newOwner) public virtual override {
-        require(
-            msg.sender == address(this),
-            "Kraken: transfer ownership must be timelocked"
-        );
-        super.transferOwnership(newOwner);
     }
 }

@@ -1,8 +1,7 @@
 pragma solidity ^0.8.0;
-import "./AUpdatable.sol";
 import "./AIndex.sol";
 
-abstract contract AIndexDirectory is AUpdatable {
+abstract contract AIndexDirectory {
     AIndex[] _indexes;
 
     function registerIndex(address indexAddress) public virtual onlyOwner {
