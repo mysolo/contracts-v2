@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Kraken is TimelockController {
     mapping(bytes32 => mapping(address => int256)) private _votes;
-    mapping(bytes32 => int256) private _results;
+    mapping(bytes32 => int256) public _results;
     ERC20[] _votingTokens;
     uint16[] _votingTokensWeight;
 
@@ -65,7 +65,7 @@ contract Kraken is TimelockController {
         _results[id] += voteWeight;
     }
 
-    function resetvote(bytes32 id) public virtual onlyOpenedOperation(id) {
+    function cancelVote(bytes32 id) public virtual onlyOpenedOperation(id) {
         int256 currentVote = _votes[id][msg.sender];
         _results[id] -= currentVote;
         _votes[id][msg.sender] = 0;
