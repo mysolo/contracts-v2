@@ -1,7 +1,10 @@
 pragma solidity ^0.8.0;
-import "./AIndex.sol";
 
-abstract contract AIndexDirectory {
+import "./AIndex.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+
+abstract contract AIndexDirectory is Ownable {
     AIndex[] _indexes;
 
     function registerIndex(address indexAddress) public virtual onlyOwner {
