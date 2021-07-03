@@ -76,6 +76,8 @@ const main = async () => {
   const indexTokenContract = await getContract("IndexToken", indexToken);
   const tx = await indexTokenContract.transferOwnership(index);
   await tx.wait();
+  const exchangerContract = await getContract("TokenExchanger", exchanger);
+  await exchangerContract.registerIndex(index);
 
   return updateAddresses({
     exchanger,

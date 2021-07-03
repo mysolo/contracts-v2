@@ -17,7 +17,7 @@ const main = async (
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     ethers.constants.AddressZero
   );
-  console.log("deployed", index.address);
+  console.log("deployed index", index.address);
   return index.address;
 };
 
