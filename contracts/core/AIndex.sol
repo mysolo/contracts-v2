@@ -4,14 +4,13 @@ import "./AUpdatable.sol";
 import "./AIndexToken.sol";
 
 abstract contract AIndex is AUpdatable {
-    AIndexToken _indexToken;
-
+    AIndexToken public _indexToken;
 
     constructor(AIndexToken indexToken) {
         _indexToken = indexToken;
     }
 
-    function update(address newContract) public override virtual {
+    function update(address newContract) public virtual override {
         _indexToken.transferOwnership(newContract);
         super.update(newContract);
     }

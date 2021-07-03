@@ -5,42 +5,70 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract IndexMigration is Ownable {
     IERC20 _WBNB;
-    uint8 _cashbackPerThouasant;
+    uint8 _cashbackPerThousand;
 
-    constructor(IERC20 WBNB) {
+    constructor(IERC20 WBNB, uint8 cashbackPerThousand) {
         _WBNB = WBNB;
+        updateCashback(cashbackPerThousand);
     }
 
-    function uptdateCashback(uint8 cashbackPerThouasant) external onlyOwner {
+    function updateCashback(uint8 cashbackPerThousand) public onlyOwner {
         require(
-            cashbackRate <= 100,
+            cashbackPerThousand <= 100,
             "IndexMigration : Cashback cant be more than 10%."
         );
-        _cashbackPerThouasant = cashbackPerThouasant;
+        _cashbackPerThousand = cashbackPerThousand;
     }
 
     function migration(
         IIndexPool indexV1,
         Index indexV2,
-        uint256 minAmountOut,
+        uint256 minAmountSell,
+        uint256 minAmountReceive,
         address payable swapTarget,
         TokenOrder[] calldata tokenOrders
-    ) external {
+    ) public {
+        require(
+            tx.origin == msg.sender,
+            "IndexMigration : Migration with cashback is forbbiden for contracts."
+        );
         uint256 amountToSell = indexV1.balanceOf(msg.sender);
         indexV1.transferFrom(msg.sender, address(this), amountToSell);
-        uint256 wbnbAmount = indexV1.sellIndex(amountToSell, 0); // 0 mint amount ? or we ask to the user ?
-        wbnbAmount += (wbnbAmount * _cashbackPerThouasant) / 1000;
+        uint256 wbnbAmount = indexV1.sellIndex(amountToSell, minAmountSell);
+        wbnbAmount += (wbnbAmount * _cashbackPerThousand) / 1000;
         require(
             _WBNB.balanceOf(address(this)) >= wbnbAmount,
             "IndexMigration : Insufficent WBNB balance to cashback the user."
         );
-        uint256 amountBought = indexV2.purchaseIndex(
+        indexV2.purchaseIndex(
             _WBNB,
             wbnbAmount,
-            minAmountOut,
+            minAmountReceive,
             swapTarget,
             tokenOrders
         );
-        indexV2.tranfer(amountBought, msg.sender);
+        uint256 amountBought = indexV2._indexToken().balanceOf(address(this));
+        indexV2._indexToken().transfer(msg.sender, amountBought);
+    }
+
+    function migrationWithoutCashback(
+        IIndexPool indexV1,
+        Index indexV2,
+        uint256 minAmountSell,
+        uint256 minAmountReceive,
+        address payable swapTarget,
+        TokenOrder[] calldata tokenOrders
+    ) external {
+        uint8 savedCashback = _cashbackPerThousand;
+        _cashbackPerThousand = 0;
+        migration(
+            indexV1,
+            indexV2,
+            minAmountSell,
+            minAmountReceive,
+            swapTarget,
+            tokenOrders
+        );
+        _cashbackPerThousand = savedCashback;
     }
 }
