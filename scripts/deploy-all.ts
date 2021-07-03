@@ -34,12 +34,40 @@ const main = async () => {
   const index = await deployIndex(
     [
       {
+        token: "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+        amount: expandTo18Decimals(1).div(10),
+      },
+      {
         token: "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
         amount: expandTo18Decimals(1),
       },
       {
-        token: "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-        amount: expandTo18Decimals(8),
+        token: "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
+        amount: expandTo18Decimals(1),
+      },
+      {
+        token: "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",
+        amount: expandTo18Decimals(1),
+      },
+      {
+        token: "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
+        amount: expandTo18Decimals(1),
+      },
+      {
+        token: "0x4338665cbb7b2485a8855a139b75d5e34ab0db94",
+        amount: expandTo18Decimals(1),
+      },
+      {
+        token: "0x0eb3a705fc54725037cc9e008bdede697f62f335",
+        amount: expandTo18Decimals(1),
+      },
+      {
+        token: "0xbf5140a22578168fd562dccf235e5d43a02ce9b1",
+        amount: expandTo18Decimals(1),
+      },
+      {
+        token: "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf",
+        amount: expandTo18Decimals(1),
       },
     ],
     exchanger,

@@ -42,25 +42,26 @@ contract Index is AIndex {
 
 		require(tokenOrders.length > 0, "BUY_ARG_MISSING");
 
-		if (true || address(sellToken) == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) {
-			sellToken = IERC20(address(_WETH));
-  	       _WETH.deposit{value: msg.value}();
-		} else {
+		if (address(sellToken) != 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE) {
 			// todo use safe transferfrom
 			sellToken.transferFrom(msg.sender, address(tokenExchanger), amountIn);
-		}
+		} else {
+			sellToken = IERC20(address(_WETH));
+  	       _WETH.deposit{value: msg.value}();
+           _WETH.transfer(address(tokenExchanger), msg.value); 
+        }
 
 		// todo make updatable, possibly add VIP tiers
 		uint256 fees = amountIn / 100;
 		uint256 amountInWithFees = amountIn + fees;
 
-		// todo use safetransferfrom
-		sellToken.transfer(address(tokenExchanger), amountIn);
-
 		uint256 boughtAmount = _purchaseUnderlyingAssets(minAmountOut, sellToken, swapTarget, tokenOrders);
 
 		_indexToken.mint(msg.sender, boughtAmount);
 		// todo: take fee
+
+        console.log(sellToken.balanceOf(address(tokenExchanger)));
+
 	}
 
 	/* todo allow to withdraw dusts */
@@ -85,14 +86,23 @@ contract Index is AIndex {
 
 	function sellIndex(IERC20 buyToken, uint256 amountOut, address payable swapTarget, TokenOrder[] calldata tokenOrders) external {
 		require(tokenOrders.length > 0, "BUY_ARGS_MISSING");
-		require(amountOut <= _indexToken.balanceOf(msg.sender), "INSUFFICIENT_BALANCE");
+		_indexToken.burn(msg.sender, amountOut);
 
-		uint256 soldAmount = _sellUnderlyingAssets(amountOut, buyToken, swapTarget, tokenOrders);
-		_indexToken.burn(msg.sender, soldAmount);
+        bool isBuyTokenETH = address(buyToken) == 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+		if (isBuyTokenETH)
+			buyToken = IERC20(address(_WETH));
+
+		uint256 saleAmount = _sellUnderlyingAssets(amountOut, buyToken, swapTarget, tokenOrders);
+
+        if (isBuyTokenETH) {
+  	      _WETH.withdraw(saleAmount);
+          (bool success, ) = msg.sender.call{ value: saleAmount }("");
+          require(success, "ETH_TRANSFER_ERROR");
+        }
 	}
 
 	function _sellUnderlyingAssets(uint256 amountOut, IERC20 buyToken, address payable swapTarget, TokenOrder[] calldata tokenOrders) private returns (uint256) {
-		uint256 minIndexAmountSold /* todo: rename */ = type(uint256).max;
+        uint256 totalSaleAmount = 0;
 
 		for (uint256 i = 0; i < tokenOrders.length; i++) {
 
@@ -101,16 +111,15 @@ contract Index is AIndex {
 			// todo use reserve
 			sellToken.transfer(address(tokenExchanger), amountOut * composition[i].amount / 1e18 /* dynamic decimals? */);
 
-			uint256 amountSold = tokenExchanger.executeTrade(
-				sellToken, buyToken, swapTarget, tokenOrders[i].callData, address(msg.sender)
+            // when selling, sale amount is sent to this contract
+			uint256 amountBought = tokenExchanger.executeTrade(
+				sellToken, buyToken, swapTarget, tokenOrders[i].callData, address(this)
 			);
-			uint256 indexAmountSold /* todo rename */ = (amountSold * 1e18 /* different decimals? */) / composition[i].amount;
-			require(indexAmountSold > 0, "SWAP_CALL_FAILED");
-			if (indexAmountSold < minIndexAmountSold)
-				minIndexAmountSold = indexAmountSold;
+            totalSaleAmount += amountBought;
+			require(amountBought > 0, "SWAP_CALL_FAILED");
 		}
 
-		return amountOut;
+		return totalSaleAmount;
 	}
 
 	function update(address newContract) public override {

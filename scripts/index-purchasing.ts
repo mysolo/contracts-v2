@@ -34,12 +34,13 @@ const purchaseIndex = async (
   const [owner] = await ethers.getSigners();
   const indexContract = await getContract("Index", index);
   const composition = await indexContract.getComposition();
+  const buyToken = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
   const quoteRequests = composition.map((tokenCompo: any) =>
     getQuote(
       "WBNB",
       tokenCompo.token,
       tokenCompo.amount.mul(buyAmount).div(expandTo18Decimals(1))
-    )
+    ).catch((err) => console.log(err))
   );
   const quotes: any[] = await Promise.all(quoteRequests);
 
@@ -51,7 +52,7 @@ const purchaseIndex = async (
   console.log("total cost:", totalCost.toString());
 
   const tx = await indexContract.purchaseIndex(
-    quotes[0].data.sellTokenAddress,
+    buyToken,
     totalCost,
     buyAmount,
     quotes[0].data.to,
@@ -70,4 +71,9 @@ const purchaseIndex = async (
 };
 
 if (isCallingScript(__filename))
-  purchaseIndex(addresses.index, addresses.indexToken, expandTo18Decimals(2));
+  purchaseIndex(addresses.index, addresses.indexToken, expandTo18Decimals(4))
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });

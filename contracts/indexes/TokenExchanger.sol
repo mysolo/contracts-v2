@@ -33,23 +33,18 @@ contract TokenExchanger is Ownable {
 
 		uint256 balanceBefore = buyToken.balanceOf(address(this));
 
-		console.log("swap target", swapTarget, "balance", sellToken.balanceOf(address(this)));
-		console.log("sell token", address(sellToken));
         // solhint-disable-next-line avoid-low-level-calls
 		(bool success,) = swapTarget.call(callData);
 
 		uint256 balanceAfter = buyToken.balanceOf(address(this));
 		uint256 amountBought = balanceAfter - balanceBefore;
 
-		if (success && amountBought > 0) {
+		if (success && amountBought > 0)
 			// todo safetransfer
 			buyToken.transfer(recipient, amountBought);
-		} else {
-			console.log("Success", success);
-		}
 		return amountBought;
 	} 
-	
+
     function setMaxAllowance(IERC20 token, address spender) internal {
         if (token.allowance(address(this), spender) != type(uint256).max) {
             token.approve(spender, type(uint256).max);
@@ -66,4 +61,6 @@ contract TokenExchanger is Ownable {
         }
         return abi.decode(_returnData, (string)); // All that remains is the revert string
     }
+
+	function receive() external payable {}
 }
