@@ -1,19 +1,23 @@
 import "contracts/v1/IIndexPool.sol";
 import "contracts/indexes/Index.sol";
 import "contracts/core/AUpdatable.sol";
+import "contracts/interfaces/IWETH9.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract IndexMigration is Ownable {
-    IERC20 _WBNB;
     uint8 _cashbackPerThousand;
 
-    constructor(IERC20 WBNB, uint8 cashbackPerThousand) {
-        _WBNB = WBNB;
+    constructor(uint8 cashbackPerThousand) {
         updateCashback(cashbackPerThousand);
     }
 
-    function withdrawCashback(uint8 cashbackPerThousand) external onlyOwner {
-        _WBNB.transfer(msg.sender, _WBNB.balanceOf(address(this)));
+    function withdrawCashback(uint8 cashbackPerThousand)
+        external
+        payable
+        onlyOwner
+    {
+        (bool success, ) = msg.sender.call{value: address(this).balance}("");
+        require(success, "ETH_TRANSFER_ERROR");
     }
 
     function updateCashback(uint8 cashbackPerThousand) public onlyOwner {
@@ -38,15 +42,15 @@ contract IndexMigration is Ownable {
         );
         uint256 amountToSell = indexV1.balanceOf(msg.sender);
         indexV1.transferFrom(msg.sender, address(this), amountToSell);
-        uint256 wbnbAmount = indexV1.sellIndex(amountToSell, minAmountSell);
-        wbnbAmount += (wbnbAmount * _cashbackPerThousand) / 1000;
+        uint256 ethAmount = indexV1.sellIndex(amountToSell, minAmountSell);
+        ethAmount += (ethAmount * _cashbackPerThousand) / 1000;
         require(
-            _WBNB.balanceOf(address(this)) >= wbnbAmount,
-            "IndexMigration : Insufficent WBNB balance to cashback the user."
+            address(this).balance >= ethAmount,
+            "IndexMigration : Insufficent balance to cashback the user."
         );
         indexV2.purchaseIndex(
-            _WBNB,
-            wbnbAmount,
+            IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE),
+            ethAmount,
             minAmountReceive,
             swapTarget,
             tokenOrders
