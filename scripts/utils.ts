@@ -1,8 +1,9 @@
 import { BigNumber, Contract, Wallet } from "ethers";
 import { Block, Provider } from "@ethersproject/abstract-provider";
+import { ethers, network } from "hardhat";
 
-import { ethers } from "hardhat";
 import { formatEther } from "ethers/lib/utils";
+import fs from "fs";
 import { randomBytes } from "crypto";
 
 export async function mineBlock(provider: any, timestamp?: number) {
@@ -40,3 +41,12 @@ export const logBalanceOf = async (
   console.log("balance: ", from18Decimals(balance).toString());
   return balance;
 };
+
+export const isCallingScript = (filename: string) => {
+  return filename === process.argv?.[1];
+};
+
+const env = network.name;
+
+export const getAddresses = () =>
+  JSON.parse(fs.readFileSync("./scripts/addresses.json").toString())[env];

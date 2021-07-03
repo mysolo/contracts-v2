@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "contracts/interfaces/IBurner.sol";
 import "contracts/interfaces/IMinter.sol";
 
-contract LEVToken is ERC20, IBurner, IMinter, Ownable {
+contract LEVToken is ERC20, IMinter, Ownable {
     uint256 immutable _createdAtBlock;
     uint256 immutable _initialSupply;
 
@@ -20,7 +20,7 @@ contract LEVToken is ERC20, IBurner, IMinter, Ownable {
         _createdAtBlock = block.number;
     }
 
-    function burn(uint256 amount) external override {
+    function burn(uint256 amount) external {
         _burn(msg.sender, amount);
     }
 

@@ -14,7 +14,8 @@ const main = async (
     R.pluck("amount", composition),
     tokenExchanger,
     indexToken,
-    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    ethers.constants.AddressZero
   );
   console.log("deployed", index.address);
   return index.address;
