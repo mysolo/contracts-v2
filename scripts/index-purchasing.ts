@@ -48,8 +48,9 @@ const purchaseIndex = async (
     (p, c) => BigNumber.from(c.data.sellAmount).add(p),
     BigNumber.from(0)
   );
+  console.log("Price", totalCost.toString());
   totalCost = totalCost.mul(101).div(100);
-  console.log("total cost:", totalCost.toString());
+  console.log("balance before", (await owner.getBalance()).toString());
 
   const tx = await indexContract.purchaseIndex(
     buyToken,
@@ -68,6 +69,7 @@ const purchaseIndex = async (
   const indexTokenContract = await getContract("IndexToken", indexToken);
   const balance = await indexTokenContract.balanceOf(owner.address);
   console.log("Balance", balance.toString());
+  console.log("balance eth after", (await owner.getBalance()).toString());
 };
 
 if (isCallingScript(__filename))
