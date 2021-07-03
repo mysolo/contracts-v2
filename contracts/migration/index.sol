@@ -13,7 +13,7 @@ contract IndexMigration is Ownable {
     }
 
     function withdrawCashback(uint8 cashbackPerThousand) external onlyOwner {
-        WBNB.transfer(msg.sender, WBNB.balanceOf(address(this)));
+        _WBNB.transfer(msg.sender, _WBNB.balanceOf(address(this)));
     }
 
     function updateCashback(uint8 cashbackPerThousand) public onlyOwner {
