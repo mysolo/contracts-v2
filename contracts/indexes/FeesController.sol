@@ -42,13 +42,14 @@ abstract contract FeesController is Ownable {
     }
 
     function pay(IERC20 originToken, uint256 amount) external virtual {
-        PancakeswapUtilities.sellToken(
-            address(originToken),
-            address(_rewardToken),
-            address(this),
-            amount,
-            _router
-        );
+        if (address(originToken) != address(_rewardToken))
+            PancakeswapUtilities.sellToken(
+                address(originToken),
+                address(_rewardToken),
+                address(this),
+                amount,
+                _router
+            );
         uint256 balance = _rewardToken.balanceOf(address(this));
         uint256 buybackAmount = (balance * _buyBackPerThousand) / 1000;
         uint256 teamReward = balance - buybackAmount;
