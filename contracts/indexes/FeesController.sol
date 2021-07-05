@@ -10,24 +10,18 @@ abstract contract FeesController is Ownable {
     IERC20 _rewardToken;
     uint16 _buyBackPerThousand;
     IERC20 _LEV;
-    IERC20 _WBNB;
-    IUniswapV2Factory _factory;
 
     constructor(
         uint16 rewardPerThousand,
         uint16 buyBackPerThousand,
         address tokenSharing,
         IERC20 LEV,
-        IUniswapV2Router02 router,
-        IUniswapV2Factory factory,
-        IERC20 WBNB
+        IUniswapV2Router02 router
     ) {
         _buyBackPerThousand = buyBackPerThousand;
         _tokenSharing = TokenSharing(tokenSharing);
         _router = router;
         _LEV = LEV;
-        _WBNB = WBNB;
-        _factory = factory;
     }
 
     function changeRewardToken(IERC20 rewardToken) external virtual onlyOwner {
