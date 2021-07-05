@@ -16,6 +16,7 @@ contract Index is AIndex {
   IndexComposition[] public composition;
   Reserve public reserve;
   FeesController public feeTo;
+  uint256 feePercentage;
   TokenExchanger public tokenExchanger;
   WETH private immutable _WETH;
 
@@ -32,7 +33,8 @@ contract Index is AIndex {
     AIndexToken _indexToken,
     Reserve _reserve,
     WETH WETH_,
-    FeesController _feeTo
+    FeesController _feeTo,
+    uint256 _feePercentage // 10e4
   ) AIndex(_indexToken) {
     for (uint256 i = 0; i < tokens.length; i++)
       composition.push(IndexComposition(tokens[i], amounts[i], 0));
@@ -40,6 +42,7 @@ contract Index is AIndex {
     tokenExchanger = _tokenExchanger;
     _WETH = WETH_;
     feeTo = _feeTo;
+    feePercentage = _feePercentage;
   }
 
   receive() external payable {}
@@ -54,6 +57,10 @@ contract Index is AIndex {
 
   function setFeeTo(FeesController newFeeTo) external onlyOwner {
     feeTo = newFeeTo;
+  }
+
+  function setFeePercentage(uint256 _feePercentage) external onlyOwner {
+    feePercentage = _feePercentage;
   }
 
   function setTokenExchanger(TokenExchanger newTokenExchanger)
@@ -80,8 +87,7 @@ contract Index is AIndex {
       address(tokenExchanger)
     );
 
-    // todo make updatable, possibly add VIP tiers
-    uint256 fees = amountIn / 100;
+    uint256 fees = (amountIn * feePercentage) / 1000;
 
     if (!isSellTokenETH) {
       // todo use safe transferfrom
@@ -111,7 +117,7 @@ contract Index is AIndex {
 
     _indexToken.mint(msg.sender, boughtAmount);
 
-    tokenExchanger.payFee(sellToken, feeTo, fees);
+    if (fees > 0) tokenExchanger.payFee(sellToken, feeTo, fees);
 
     console.log(sellToken.balanceOf(address(tokenExchanger)));
     emit IndexPurchased(msg.sender, boughtAmount);
@@ -173,8 +179,8 @@ contract Index is AIndex {
       tokenOrders
     );
 
-    uint256 fees = saleAmount / 100; // todo custom fee
-    tokenExchanger.payFee(buyToken, feeTo, fees);
+    uint256 fees = (saleAmount * feePercentage) / 1000;
+    if (fees > 0) tokenExchanger.payFee(buyToken, feeTo, fees);
 
     uint256 refund = 0;
     payUser(buyToken, saleAmount + refund - fees, isBuyTokenETH);
