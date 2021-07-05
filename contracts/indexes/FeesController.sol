@@ -18,25 +18,25 @@ abstract contract FeesController is Ownable {
         IERC20 LEV,
         IUniswapV2Router02 router
     ) {
-        _buyBackPerThousand = buyBackPerThousand;
         _tokenSharing = TokenSharing(tokenSharing);
-        __rewardToken = _rewardToken;
         _router = router;
         _LEV = LEV;
+        changeBuyback(buyBackPerThousand);
+        changeRewardToken(rewardToken);
     }
 
-    function changeRewardToken(IERC20 rewardToken) external virtual onlyOwner {
+    function changeRewardToken(IERC20 rewardToken) public virtual onlyOwner {
+        require(
+            address(rewardToken) != address(_LEV),
+            "FeesController : Reward token cannot be LEV"
+        );
         _rewardToken = rewardToken;
     }
 
-    function changeBuyback(uint16 buyBackPerThousand)
-        external
-        virtual
-        onlyOwner
-    {
+    function changeBuyback(uint16 buyBackPerThousand) public virtual onlyOwner {
         require(
             buyBackPerThousand <= 1000,
-            "FeesController : buyback must be <= 100%."
+            "FeesController : buyback must be <= 100%"
         );
         _buyBackPerThousand = buyBackPerThousand;
     }
