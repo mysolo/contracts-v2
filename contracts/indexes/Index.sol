@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./TokenExchanger.sol";
 import "./Reserve.sol";
+import "./FeesController.sol";
 import "contracts/models/TokenOrder.sol";
 import "contracts/models/IndexComposition.sol";
 import "contracts/core/AIndex.sol";
@@ -14,7 +15,7 @@ import "hardhat/console.sol";
 contract Index is AIndex {
   IndexComposition[] public composition;
   Reserve public reserve;
-  address public feeTo;
+  FeesController public feeTo;
   TokenExchanger public tokenExchanger;
   WETH private immutable _WETH;
 
@@ -31,7 +32,7 @@ contract Index is AIndex {
     AIndexToken _indexToken,
     Reserve _reserve,
     WETH WETH_,
-    address _feeTo
+    FeesController _feeTo
   ) AIndex(_indexToken) {
     for (uint256 i = 0; i < tokens.length; i++)
       composition.push(IndexComposition(tokens[i], amounts[i], 0));
@@ -45,6 +46,21 @@ contract Index is AIndex {
 
   function getComposition() external view returns (IndexComposition[] memory) {
     return composition;
+  }
+
+  function setReserve(Reserve newReserve) external onlyOwner {
+    reserve = newReserve;
+  }
+
+  function setFeeTo(FeesController newFeeTo) external onlyOwner {
+    feeTo = newFeeTo;
+  }
+
+  function setTokenExchanger(TokenExchanger newTokenExchanger)
+    external
+    onlyOwner
+  {
+    tokenExchanger = newTokenExchanger;
   }
 
   function purchaseIndex(
@@ -64,17 +80,20 @@ contract Index is AIndex {
       address(tokenExchanger)
     );
 
-    if (!isSellTokenETH) {
-      // todo use safe transferfrom
-      sellToken.transferFrom(msg.sender, address(tokenExchanger), amountIn);
-    } else {
-      _WETH.deposit{ value: msg.value }();
-      _WETH.transfer(address(tokenExchanger), msg.value);
-    }
-
     // todo make updatable, possibly add VIP tiers
     uint256 fees = amountIn / 100;
-    uint256 amountInWithFees = amountIn + fees;
+
+    if (!isSellTokenETH) {
+      // todo use safe transferfrom
+      sellToken.transferFrom(
+        msg.sender,
+        address(tokenExchanger),
+        amountIn + fees
+      );
+    } else {
+      _WETH.deposit{ value: amountIn + fees }();
+      _WETH.transfer(address(tokenExchanger), amountIn + fees);
+    }
 
     uint256 boughtAmount = _purchaseUnderlyingAssets(
       minAmountOut,
@@ -91,7 +110,8 @@ contract Index is AIndex {
     payUser(sellToken, refundAmount, isSellTokenETH);
 
     _indexToken.mint(msg.sender, boughtAmount);
-    // todo: take fee
+
+    tokenExchanger.payFee(sellToken, feeTo, fees);
 
     console.log(sellToken.balanceOf(address(tokenExchanger)));
     emit IndexPurchased(msg.sender, boughtAmount);
@@ -152,8 +172,12 @@ contract Index is AIndex {
       swapTarget,
       tokenOrders
     );
+
+    uint256 fees = saleAmount / 100; // todo custom fee
+    tokenExchanger.payFee(buyToken, feeTo, fees);
+
     uint256 refund = 0;
-    payUser(buyToken, saleAmount + refund, isBuyTokenETH);
+    payUser(buyToken, saleAmount + refund - fees, isBuyTokenETH);
 
     emit IndexSold(msg.sender, amountOut);
   }

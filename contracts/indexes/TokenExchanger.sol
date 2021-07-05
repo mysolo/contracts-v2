@@ -3,6 +3,7 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./FeesController.sol";
 
 import "hardhat/console.sol";
 
@@ -73,6 +74,15 @@ contract TokenExchanger is Ownable {
       _returnData := add(_returnData, 0x04)
     }
     return abi.decode(_returnData, (string)); // All that remains is the revert string
+  }
+
+  function payFee(
+    IERC20 token,
+    FeesController feeTo,
+    uint256 amount
+  ) external onlyIndex {
+    setMaxAllowance(token, address(feeTo));
+    feeTo.pay(token, amount);
   }
 
   receive() external payable {}
