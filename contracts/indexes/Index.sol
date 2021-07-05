@@ -2,6 +2,7 @@
 pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./TokenExchanger.sol";
 import "./Reserve.sol";
 import "./FeesController.sol";
@@ -12,7 +13,7 @@ import "contracts/tokens/WETH.sol";
 
 import "hardhat/console.sol";
 
-contract Index is AIndex {
+contract Index is AIndex, ReentrancyGuard {
   IndexComposition[] public composition;
   Reserve public reserve;
   FeesController public feeTo;
@@ -76,7 +77,7 @@ contract Index is AIndex {
     uint256 minAmountOut,
     address payable swapTarget,
     TokenOrder[] calldata tokenOrders
-  ) external payable {
+  ) external payable nonReentrant {
     require(tokenOrders.length > 0, "BUY_ARG_MISSING");
 
     bool isSellTokenETH = address(sellToken) ==
@@ -164,7 +165,7 @@ contract Index is AIndex {
     uint256 amountOut,
     address payable swapTarget,
     TokenOrder[] calldata tokenOrders
-  ) external {
+  ) external nonReentrant {
     require(tokenOrders.length > 0, "BUY_ARGS_MISSING");
     _indexToken.burn(msg.sender, amountOut);
 
@@ -276,5 +277,23 @@ contract Index is AIndex {
     super.update(newContract);
     reserve.addManager(newContract);
     reserve.removeManager(address(this));
+  }
+
+  /*
+   ** If something's wrong with the LPs or anything else, anyone can
+   ** withdraw the index underlying tokens directly to their wallets
+   */
+  function emergencyWithdraw() external nonReentrant {
+    uint256 userBalance = _indexToken.balanceOf(msg.sender);
+
+    for (uint256 i = 0; i < composition.length; i++) {
+      uint256 entitledAmount = (userBalance * composition[i].amount) / 1e18;
+      ERC20 token = ERC20(composition[i].token);
+      uint256 indexBalance = token.balanceOf(address(reserve));
+      // should never happen!
+      if (indexBalance < entitledAmount) entitledAmount = indexBalance;
+      reserve.transfer(token, entitledAmount, msg.sender);
+    }
+    _indexToken.burn(msg.sender, userBalance);
   }
 }
