@@ -12,14 +12,15 @@ abstract contract FeesController is Ownable {
     IERC20 _LEV;
 
     constructor(
-        uint16 rewardPerThousand,
         uint16 buyBackPerThousand,
         address tokenSharing,
+        IERC20 rewardToken,
         IERC20 LEV,
         IUniswapV2Router02 router
     ) {
         _buyBackPerThousand = buyBackPerThousand;
         _tokenSharing = TokenSharing(tokenSharing);
+        __rewardToken = _rewardToken;
         _router = router;
         _LEV = LEV;
     }
