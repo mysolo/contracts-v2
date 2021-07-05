@@ -37,7 +37,7 @@ contract IndexMigration is Ownable {
         TokenOrder[] calldata tokenOrders
     ) public {
         require(
-            tx.origin == msg.sender && _cashbackPerThousand > 0,
+            tx.origin == msg.sender || _cashbackPerThousand == 0,
             "IndexMigration : Migration with cashback is forbbiden for contracts."
         );
         uint256 amountToSell = indexV1.balanceOf(msg.sender);
