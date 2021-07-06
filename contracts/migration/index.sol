@@ -11,11 +11,7 @@ contract IndexMigration is Ownable {
         updateCashback(cashbackPerThousand);
     }
 
-    function withdrawCashback(uint8 cashbackPerThousand)
-        external
-        payable
-        onlyOwner
-    {
+    function withdrawCashback() external payable onlyOwner {
         (bool success, ) = msg.sender.call{value: address(this).balance}("");
         require(success, "ETH_TRANSFER_ERROR");
     }
