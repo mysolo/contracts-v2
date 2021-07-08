@@ -65,7 +65,7 @@ const purchaseIndex = async (
       token: q.data.buyTokenAddress,
     })),
     {
-      value: totalCost + fee,
+      value: totalCost.add(fee),
     }
   );
   await tx.wait();

@@ -3,9 +3,11 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "contracts/team/TokenSharing.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+
+import "contracts/team/TokenSharing.sol";
+import "contracts/tokens/LEVToken.sol";
 
 import "hardhat/console.sol";
 
@@ -14,13 +16,13 @@ contract FeesController is Ownable {
   IUniswapV2Router02 _router;
   IERC20 _rewardToken;
   uint16 _buyBackPerThousand;
-  IERC20 _LEV;
+  LEVToken _LEV;
 
   constructor(
     uint16 buyBackPerThousand,
     address tokenSharing,
     IERC20 rewardToken,
-    IERC20 LEV,
+    LEVToken LEV,
     IUniswapV2Router02 router
   ) {
     _tokenSharing = TokenSharing(tokenSharing);
@@ -68,7 +70,7 @@ contract FeesController is Ownable {
       buybackAmount,
       _router
     );
-    _LEV.transfer(address(0), _LEV.balanceOf(address(this)));
+    _LEV.burn(_LEV.balanceOf(address(this)));
   }
 
   function sellToken(
