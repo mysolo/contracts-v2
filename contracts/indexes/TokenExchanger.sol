@@ -82,6 +82,12 @@ contract TokenExchanger is Ownable {
     uint256 amount
   ) external onlyIndex {
     setMaxAllowance(token, address(feeTo));
+    console.log(
+      "balance is",
+      token.balanceOf(address(this)),
+      "sending",
+      amount
+    );
     feeTo.pay(token, amount);
   }
 

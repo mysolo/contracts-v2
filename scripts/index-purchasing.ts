@@ -49,8 +49,11 @@ const purchaseIndex = async (
     BigNumber.from(0)
   );
   console.log("Price", totalCost.toString());
+  // 1% for slippage
   totalCost = totalCost.mul(101).div(100);
   console.log("balance before", (await owner.getBalance()).toString());
+
+  const fee = totalCost.div(100);
 
   const tx = await indexContract.purchaseIndex(
     buyToken,
@@ -62,7 +65,7 @@ const purchaseIndex = async (
       token: q.data.buyTokenAddress,
     })),
     {
-      value: totalCost,
+      value: totalCost + fee,
     }
   );
   await tx.wait();

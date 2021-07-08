@@ -7,6 +7,8 @@ import "contracts/team/TokenSharing.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
+import "hardhat/console.sol";
+
 contract FeesController is Ownable {
   TokenSharing _tokenSharing;
   IUniswapV2Router02 _router;
@@ -45,6 +47,8 @@ contract FeesController is Ownable {
   }
 
   function pay(IERC20 originToken, uint256 amount) external virtual {
+    originToken.transferFrom(msg.sender, address(this), amount);
+
     if (address(originToken) != address(_rewardToken))
       sellToken(
         address(originToken),
