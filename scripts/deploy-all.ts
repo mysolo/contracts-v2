@@ -2,8 +2,10 @@ import { ethers, network } from "hardhat";
 import { expandTo18Decimals, getAddresses, isCallingScript } from "./utils";
 
 import deployExchanger from "./deploy-exchanger";
+import deployFeesController from "./deploy-fees-controller";
 import deployIndex from "./deploy-index";
 import deployIndexToken from "./deploy-index-token";
+import deployReserve from "./deploy-reserve";
 import fs from "fs";
 import { getContract } from "./contracts";
 
@@ -31,6 +33,8 @@ const updateAddresses = (nextAddresses: any) => {
 const main = async () => {
   const exchanger = await deployExchanger();
   const indexToken = await deployIndexToken("LegacyIndex", "LI");
+  const reserve = await deployReserve();
+  const feeController = await deployFeesController(750);
   const index = await deployIndex(
     [
       {
@@ -71,7 +75,9 @@ const main = async () => {
       },
     ],
     exchanger,
-    indexToken
+    indexToken,
+    reserve,
+    feeController
   );
   const indexTokenContract = await getContract("IndexToken", indexToken);
   const tx = await indexTokenContract.transferOwnership(index);

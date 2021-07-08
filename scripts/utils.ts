@@ -2,6 +2,7 @@ import { BigNumber, Contract, Wallet } from "ethers";
 import { Block, Provider } from "@ethersproject/abstract-provider";
 import { ethers, network } from "hardhat";
 
+import addresses from "./addresses.json";
 import { formatEther } from "ethers/lib/utils";
 import fs from "fs";
 import { randomBytes } from "crypto";
@@ -46,7 +47,9 @@ export const isCallingScript = (filename: string) => {
   return filename === process.argv?.[1];
 };
 
-const env = network.name;
+const env = network.name as "localhost";
 
-export const getAddresses = () =>
-  JSON.parse(fs.readFileSync("./scripts/addresses.json").toString())[env];
+export const getAddresses = () => {
+  if (env !== "localhost") throw new Error("Unsupported network " + env);
+  return addresses[env];
+};
