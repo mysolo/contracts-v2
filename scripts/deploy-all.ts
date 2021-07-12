@@ -6,8 +6,10 @@ import deployFeesController from "./deploy-fees-controller";
 import deployIndex from "./deploy-index";
 import deployIndexToken from "./deploy-index-token";
 import deployReserve from "./deploy-reserve";
+import deployTopChef from "./top-masterchef";
 import fs from "fs";
 import { getContract } from "./contracts";
+import recoverLevOwnership from "./recover-lev-ownership";
 
 const env = network.name;
 const addresses = getAddresses();
@@ -86,6 +88,9 @@ const main = async () => {
   await tx.wait();
   const exchangerContract = await getContract("TokenExchanger", exchanger);
   await exchangerContract.registerIndex(index);
+
+  //const topChef = await deployTopChef();
+  //await recoverLevOwnership(topChef);
 
   return updateAddresses({
     exchanger,
