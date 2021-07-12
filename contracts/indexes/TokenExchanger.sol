@@ -10,12 +10,18 @@ import "hardhat/console.sol";
 contract TokenExchanger is Ownable {
   mapping(address => bool) public indexes;
 
+  event IndexRegistered(address index);
+  event IndexUnregistered(address index);
+  event DustWithdrawn(address token);
+
   function registerIndex(address index) external onlyOwner {
     indexes[index] = true;
+    emit IndexRegistered(index);
   }
 
   function unregisterIndex(address index) external onlyOwner {
     delete indexes[index];
+    emit IndexUnregistered(index);
   }
 
   modifier onlyIndex {
@@ -83,6 +89,13 @@ contract TokenExchanger is Ownable {
   ) external onlyIndex {
     setMaxAllowance(token, address(feeTo));
     feeTo.pay(token, amount);
+  }
+
+  function withdrawDusts(IERC20[] memory tokens) external onlyOwner {
+    for (uint32 i = 0; i < tokens.length; i++) {
+      tokens[i].transfer(msg.sender, tokens[i].balanceOf(address(this)));
+      emit DustWithdrawn(address(tokens[i]));
+    }
   }
 
   receive() external payable {}

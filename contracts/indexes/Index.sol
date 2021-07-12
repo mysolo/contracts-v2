@@ -26,6 +26,10 @@ contract Index is AIndex, ReentrancyGuard {
   event TokenAdded(address token, uint256 amount);
   event TokenRemoved(address token);
   event TokenAmountChanged(address token, uint256 amount);
+  event ReserveChanged(address reserve);
+  event FeeToChanged(address feeTo);
+  event FeePercentageChanged(uint256 feePercentage);
+  event TokenExchangerChanged(address tokenExchanger);
 
   constructor(
     address[] memory tokens,
@@ -54,14 +58,17 @@ contract Index is AIndex, ReentrancyGuard {
 
   function setReserve(Reserve newReserve) external onlyOwner {
     reserve = newReserve;
+    emit ReserveChanged(address(newReserve));
   }
 
   function setFeeTo(FeesController newFeeTo) external onlyOwner {
     feeTo = newFeeTo;
+    emit FeeToChanged(address(newFeeTo));
   }
 
   function setFeePercentage(uint256 _feePercentage) external onlyOwner {
     feePercentage = _feePercentage;
+    emit FeePercentageChanged(_feePercentage);
   }
 
   function setTokenExchanger(TokenExchanger newTokenExchanger)
@@ -69,6 +76,7 @@ contract Index is AIndex, ReentrancyGuard {
     onlyOwner
   {
     tokenExchanger = newTokenExchanger;
+    emit TokenExchangerChanged(address(newTokenExchanger));
   }
 
   function purchaseIndex(
@@ -123,7 +131,6 @@ contract Index is AIndex, ReentrancyGuard {
     emit IndexPurchased(msg.sender, boughtAmount);
   }
 
-  /* todo allow to withdraw dusts */
   function _purchaseUnderlyingAssets(
     uint256 amountOut, /* todo: rename */
     IERC20 sellToken,
@@ -145,12 +152,10 @@ contract Index is AIndex, ReentrancyGuard {
 
       uint256 indexAmountPurchased = (amountBought * 1e18) /
         composition[i].amount;
-      console.log("token ", composition[i].token, "bought", amountBought);
       if (indexAmountPurchased < minIndexAmountPurchased)
         minIndexAmountPurchased = indexAmountPurchased;
     }
 
-    console.log("bought", minIndexAmountPurchased);
     /* todo: make slippage dynamic */
     require(
       minIndexAmountPurchased >= (amountOut * 99) / 100,

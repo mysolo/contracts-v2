@@ -11,6 +11,9 @@ import "./Index.sol";
 contract Reserve is AUpdatable {
   mapping(address => bool) managers;
 
+  event ManagerAdded(address manager);
+  event ManagerRemoved(address manager);
+
   constructor(address[] memory _managers) {
     for (uint32 i = 0; i < _managers.length; i++) addManager(_managers[i]);
   }
@@ -18,11 +21,13 @@ contract Reserve is AUpdatable {
   function addManager(address manager) public onlyOwner {
     require(!managers[manager], "ALREADY_A_MANAGER");
     managers[manager] = true;
+    emit ManagerAdded(manager);
   }
 
   function removeManager(address manager) external onlyOwner {
     require(managers[manager], "NOT_A_MANAGER");
     managers[manager] = false;
+    emit ManagerRemoved(manager);
   }
 
   modifier onlyManager {

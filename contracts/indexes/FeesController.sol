@@ -18,6 +18,11 @@ contract FeesController is Ownable {
   uint16 _buyBackPerThousand;
   LEVToken _LEV;
 
+  event RewardTokenChanged(address rewardToken);
+  event BuybackChanged(address buybackPerThousand);
+  event Triggered(address token, uint256 amount);
+  event LevBoughtBack(uint256 amount);
+
   constructor(
     uint16 buyBackPerThousand,
     address tokenSharing,
@@ -71,6 +76,7 @@ contract FeesController is Ownable {
       _router
     );
     _LEV.burn(_LEV.balanceOf(address(this)));
+    emit Triggered(address(originToken), amount);
   }
 
   function sellToken(
@@ -91,6 +97,7 @@ contract FeesController is Ownable {
       account,
       block.timestamp + 60
     );
+    emit LevBoughtBack(amounts[1]);
     return (amounts[1], amounts[0]);
   }
 }
