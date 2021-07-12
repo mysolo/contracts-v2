@@ -49,7 +49,7 @@ contract TokenExchanger is Ownable {
     uint256 balanceAfter = buyToken.balanceOf(address(this));
     uint256 amountBought = balanceAfter - balanceBefore;
 
-    if (success && amountBought > 0)
+    if (success && amountBought > 0 && recipient != address(this))
       // todo safetransfer
       buyToken.transfer(recipient, amountBought);
     return amountBought;

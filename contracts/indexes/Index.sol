@@ -211,7 +211,7 @@ contract Index is AIndex, ReentrancyGuard {
         buyToken,
         swapTarget,
         tokenOrders[i].callData,
-        address(this)
+        address(tokenExchanger)
       );
       totalSaleAmount += amountBought;
       require(amountBought > 0, "SWAP_CALL_FAILED");
@@ -252,7 +252,6 @@ contract Index is AIndex, ReentrancyGuard {
     emit TokenAdded(address(token), amount);
   }
 
-  // could happen in exchanger?
   function payUser(
     IERC20 token,
     uint256 amount,
@@ -263,7 +262,7 @@ contract Index is AIndex, ReentrancyGuard {
       _WETH.withdraw(amount);
       (bool success, ) = msg.sender.call{ value: amount }("");
       require(success, "ETH_TRANSFER_ERROR");
-    } else token.transfer(msg.sender, amount);
+    } else tokenExchanger.transfer(token, amount, msg.sender);
   }
 
   function update(address newContract)
