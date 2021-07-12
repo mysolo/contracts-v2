@@ -33,10 +33,10 @@ const config: HardhatUserConfig = {
     hardhat: {
       accounts: process.env.MNEMONIC && accounts,
       forking: {
-        	      url: process.env.FORKMATIC
-              ? "https://matic.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882"
-        	      : "https://bsc.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882",
-//        url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_ROPSTEN_API_KEY}`,
+        url: process.env.FORKMATIC
+          ? "https://matic.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882"
+          : "https://bsc.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882",
+        //        url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_ROPSTEN_API_KEY}`,
       },
       mining: {
         auto: true,
@@ -46,6 +46,7 @@ const config: HardhatUserConfig = {
     localhost: {
       url: "http://127.0.0.1:8545",
       accounts: accounts,
+      timeout: 30000,
     },
     mainnet: {
       url: "https://bsc.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882",

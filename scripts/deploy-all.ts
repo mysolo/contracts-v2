@@ -79,6 +79,8 @@ const main = async () => {
     reserve,
     feeController
   );
+  const reserveContract = await getContract("Reserve", reserve);
+  await reserveContract.addManager(index);
   const indexTokenContract = await getContract("IndexToken", indexToken);
   const tx = await indexTokenContract.transferOwnership(index);
   await tx.wait();
