@@ -10,12 +10,21 @@ import qs from "querystring";
 
 const addresses = getAddresses();
 export const _0xUrl = "https://bsc.api.0x.org";
+const WETH = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 
 const getQuote = (
   sellToken: string,
   buyToken: string,
   buyAmount: BigNumber
 ) => {
+  if (sellToken === buyToken || (buyToken === WETH && sellToken === "WBNB"))
+    return Promise.resolve({
+      data: {
+        sellAmount: buyAmount,
+        buyTokenAddress: buyToken,
+        data: Buffer.from(""),
+      },
+    });
   const params = {
     sellToken,
     buyToken,

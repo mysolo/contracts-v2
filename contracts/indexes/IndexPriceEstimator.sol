@@ -6,8 +6,6 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "./Index.sol";
 import "../models/IndexComposition.sol";
 
-import "hardhat/console.sol";
-
 contract IndexPriceEstimator {
   IUniswapV2Router02 public router;
   address public BUSD = 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56;
@@ -32,10 +30,9 @@ contract IndexPriceEstimator {
     for (uint32 i = 0; i < composition.length; i++) {
       route[2] = composition[i].token;
       uint256[] memory amounts = router.getAmountsIn(
-        composition[i].amount,
+        (composition[i].amount * amount) / 1e18,
         route
       );
-      console.log(amounts[0]);
       totalPrice += amounts[0];
     }
 

@@ -142,13 +142,22 @@ contract Index is AIndex, ReentrancyGuard {
      = type(uint256).max;
 
     for (uint256 i = 0; i < tokenOrders.length; i++) {
-      uint256 amountBought = tokenExchanger.executeTrade(
-        sellToken,
-        IERC20(composition[i].token),
-        swapTarget,
-        tokenOrders[i].callData,
-        address(reserve)
-      );
+      IERC20 token = IERC20(composition[i].token);
+      uint256 amountBought = 0;
+
+      if (token == sellToken) {
+        uint256 amount = (amountOut * composition[i].amount) / 1e18;
+        tokenExchanger.transfer(token, amount, address(reserve));
+        amountBought = amount;
+      } else {
+        amountBought = tokenExchanger.executeTrade(
+          sellToken,
+          IERC20(composition[i].token),
+          swapTarget,
+          tokenOrders[i].callData,
+          address(reserve)
+        );
+      }
 
       uint256 indexAmountPurchased = (amountBought * 1e18) /
         composition[i].amount;
