@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./FeesController.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract TokenExchanger is Ownable {
   mapping(address => bool) public indexes;

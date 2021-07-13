@@ -1,7 +1,7 @@
+import { WETH, _0xUrl } from "./index-purchasing";
 import { expandTo18Decimals, getAddresses, isCallingScript } from "./utils";
 
 import { BigNumber } from "ethers";
-import { _0xUrl } from "./index-purchasing";
 import axios from "axios";
 import { ethers } from "hardhat";
 import { getContract } from "./contracts";
@@ -14,6 +14,15 @@ const getQuote = (
   buyToken: string,
   sellAmount: BigNumber
 ) => {
+  if (sellToken === buyToken || (buyToken === "WBNB" && sellToken === WETH))
+    return Promise.resolve({
+      data: {
+        buyTokenAddress: sellToken,
+        data: Buffer.from(""),
+        to: ethers.constants.AddressZero,
+      },
+    });
+
   const params = {
     sellToken,
     buyToken,

@@ -11,7 +11,7 @@ import "contracts/models/IndexComposition.sol";
 import "contracts/core/AIndex.sol";
 import "contracts/tokens/WETH.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract Index is AIndex, ReentrancyGuard {
   IndexComposition[] public composition;
@@ -192,7 +192,6 @@ contract Index is AIndex, ReentrancyGuard {
       swapTarget,
       tokenOrders
     );
-
     uint256 fees = (saleAmount * feePercentage) / 1000;
     if (fees > 0) tokenExchanger.payFee(buyToken, feeTo, fees);
 
@@ -212,21 +211,19 @@ contract Index is AIndex, ReentrancyGuard {
 
     for (uint256 i = 0; i < tokenOrders.length; i++) {
       IERC20 sellToken = IERC20(composition[i].token);
+      uint256 amount = (amountOut * composition[i].amount) / 1e18; /* dynamic decimals? */
 
-      reserve.transfer(
-        sellToken,
-        (amountOut * composition[i].amount) / 1e18, /* dynamic decimals? */
-        address(tokenExchanger)
-      );
+      reserve.transfer(sellToken, amount, address(tokenExchanger));
 
-      // when selling, sale amount is sent to this contract
-      uint256 amountBought = tokenExchanger.executeTrade(
-        sellToken,
-        buyToken,
-        swapTarget,
-        tokenOrders[i].callData,
-        address(tokenExchanger)
-      );
+      uint256 amountBought = amount;
+      if (address(buyToken) != composition[i].token)
+        amountBought = tokenExchanger.executeTrade(
+          sellToken,
+          buyToken,
+          swapTarget,
+          tokenOrders[i].callData,
+          address(tokenExchanger)
+        );
       totalSaleAmount += amountBought;
       require(amountBought > 0, "SWAP_CALL_FAILED");
     }

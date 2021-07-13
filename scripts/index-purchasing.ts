@@ -10,7 +10,7 @@ import qs from "querystring";
 
 const addresses = getAddresses();
 export const _0xUrl = "https://bsc.api.0x.org";
-const WETH = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+export const WETH = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 
 const getQuote = (
   sellToken: string,

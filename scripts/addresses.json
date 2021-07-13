@@ -1,9 +1,9 @@
 {
   "localhost": {
     "masterChefv1": "0xA3fDF7F376F4BFD38D7C4A5cf8AAb4dE68792fd4",
-    "exchanger": "0x5FeaeBfB4439F3516c74939A9D04e95AFE82C4ae",
-    "indexToken": "0x976fcd02f7C4773dd89C309fBF55D5923B4c98a1",
-    "index": "0xfcDB4564c18A9134002b9771816092C9693622e3",
+    "exchanger": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+    "indexToken": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+    "index": "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154",
     "tokenSharing": "0xE1CDdFb630f234b04c63412cb4C4BA702A780855",
     "uniswapRouter": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
     "tokens": {
