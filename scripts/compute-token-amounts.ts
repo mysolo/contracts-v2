@@ -35,7 +35,7 @@ export const computeTargetWeights = async (
     BigNumber.from(0)
   );
   const adjustedWeights = pricesUSDBN.map((p: BigNumber, index: number) => {
-    return BigNumber.from(weights[index]).mul(total).div(p).mul(multiplier);
+    return BigNumber.from(weights[index]).mul(total).mul(multiplier).div(p);
   });
   return adjustedWeights;
 };
