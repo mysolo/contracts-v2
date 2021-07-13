@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 abstract contract AUpdatable is Ownable {
     bool _upToDate;
 
+    event Updated(address newContract);
+
     constructor() {
         _upToDate = true;
     }
@@ -20,8 +22,8 @@ abstract contract AUpdatable is Ownable {
         _;
     }
 
-    function update(address) public virtual onlyOwner onlyUpToDate {
+    function update(address newContract) public virtual onlyOwner onlyUpToDate {
         _upToDate = false;
-        //event
+        emit Updated(newContract);
     }
 }
