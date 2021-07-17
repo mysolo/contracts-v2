@@ -47,9 +47,10 @@ export const isCallingScript = (filename: string) => {
   return filename === process.argv?.[1];
 };
 
-const env = network.name as "localhost";
+const env = network.name as "localhost" | "mainnet";
 
 export const getAddresses = () => {
-  if (env !== "localhost") throw new Error("Unsupported network " + env);
+  if (env !== "localhost" && env !== "mainnet")
+    throw new Error("Unsupported network " + env);
   return addresses[env];
 };

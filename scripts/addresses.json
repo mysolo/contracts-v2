@@ -1,9 +1,9 @@
 {
   "localhost": {
     "masterChefv1": "0xA3fDF7F376F4BFD38D7C4A5cf8AAb4dE68792fd4",
-    "exchanger": "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
-    "indexToken": "0x1fA02b2d6A771842690194Cf62D91bdd92BfE28d",
-    "index": "0x4C4a2f8c81640e47606d3fd77B353E87Ba015584",
+    "exchanger": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+    "indexToken": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+    "index": "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154",
     "tokenSharing": "0xE1CDdFb630f234b04c63412cb4C4BA702A780855",
     "uniswapRouter": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
     "tokens": {
@@ -13,9 +13,9 @@
   },
   "mainnet": {
     "masterChefv1": "0xA3fDF7F376F4BFD38D7C4A5cf8AAb4dE68792fd4",
-    "exchanger": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
-    "indexToken": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
-    "index": "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154",
+    "exchanger": "0x946689e23F1c2af4788dEF1C685A112644b25a99",
+    "indexToken": "0xF2D03B184426E49EafAc35773E9496Cf9A44b269",
+    "index": "0x40589D6ef804e24A17e422350d4999bA1285C822",
     "tokenSharing": "0xE1CDdFb630f234b04c63412cb4C4BA702A780855",
     "uniswapRouter": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
     "tokens": {

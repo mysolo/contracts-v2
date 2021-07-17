@@ -22,7 +22,7 @@ contract Index is AIndex, ReentrancyGuard {
   WETH private immutable _WETH;
 
   event IndexPurchased(address to, uint256 amount);
-  event IndexSold(address from, uint256 amount);
+  event IndexSold(address from, uint256 amountIn);
   event TokenAdded(address token, uint256 amount);
   event TokenRemoved(address token);
   event TokenAmountChanged(address token, uint256 amount);
@@ -175,19 +175,20 @@ contract Index is AIndex, ReentrancyGuard {
 
   function sellIndex(
     IERC20 buyToken,
-    uint256 amountOut,
+    uint256 amountIn,
+    uint256 minAmountOut,
     address payable swapTarget,
     TokenOrder[] calldata tokenOrders
   ) external nonReentrant {
     require(tokenOrders.length > 0, "BUY_ARGS_MISSING");
-    _indexToken.burn(msg.sender, amountOut);
+    _indexToken.burn(msg.sender, amountIn);
 
     bool isBuyTokenETH = address(buyToken) ==
       0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     if (isBuyTokenETH) buyToken = IERC20(address(_WETH));
 
     uint256 saleAmount = _sellUnderlyingAssets(
-      amountOut,
+      amountIn,
       buyToken,
       swapTarget,
       tokenOrders
@@ -196,9 +197,12 @@ contract Index is AIndex, ReentrancyGuard {
     if (fees > 0) tokenExchanger.payFee(buyToken, feeTo, fees);
 
     uint256 refund = 0;
-    payUser(buyToken, saleAmount + refund - fees, isBuyTokenETH);
+    uint256 amountOut = saleAmount + refund - fees;
+    require(amountOut >= minAmountOut, "AMOUNT_OUT_TOO_LOW");
 
-    emit IndexSold(msg.sender, amountOut);
+    payUser(buyToken, amountOut, isBuyTokenETH);
+
+    emit IndexSold(msg.sender, amountIn);
   }
 
   function _sellUnderlyingAssets(
