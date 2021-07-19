@@ -6,3 +6,6 @@ Welcome to the updated Levyathan contracts. Notable new features:
 - Real governance that can send transactions is added
 - Staking has autocompounding
 - Architecture is more upgradable
+
+![diagram](assets/diagrams.png)
+
