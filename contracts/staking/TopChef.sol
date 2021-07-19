@@ -19,7 +19,8 @@ contract TopChef is MasterChef, AUpdatable {
   }
 
   function update(address newContract) external onlyOwner {
-    // todo: set pool rewards to 0?
+    for (uint16 i = 0; i < poolInfo.length; i++) set(i, 0, false);
+    massUpdatePools();
     sushi.transferOwnership(newContract);
   }
 }
