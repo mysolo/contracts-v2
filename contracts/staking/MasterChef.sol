@@ -18,7 +18,7 @@ interface IMigratorChef {
 }
 
 // MasterChef is the master of Sushi. He can make Sushi and he is a fair guy.
-//
+//, amountOut
 // Note that it's ownable and the owner wields tremendous power. The ownership
 // will be transferred to a governance smart contract once SUSHI is sufficiently
 // distributed and the community can show to govern itself.

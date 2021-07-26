@@ -14,7 +14,7 @@ import recoverLevOwnership from "./recover-lev-ownership";
 const env = network.name;
 const addresses = getAddresses();
 
-const updateAddresses = (nextAddresses: any) => {
+export const updateAddresses = (nextAddresses: any) => {
   const oldAddresses = JSON.parse(
     fs.readFileSync("./scripts/addresses.json").toString()
   );

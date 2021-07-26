@@ -3,6 +3,7 @@ pragma solidity 0.8.4;
 
 import "contracts/staking/MasterChef.sol";
 import "contracts/core/AUpdatable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TopChef is MasterChef, AUpdatable {
   constructor(
@@ -18,9 +19,9 @@ contract TopChef is MasterChef, AUpdatable {
     sushiPerBlock = _sushiPerBlock;
   }
 
-  function update(address newContract) external onlyOwner {
+  function update(address newContract) public override onlyOwner {
     for (uint16 i = 0; i < poolInfo.length; i++) set(i, 0, false);
     massUpdatePools();
-    sushi.transferOwnership(newContract);
+    Ownable(address(sushi)).transferOwnership(newContract);
   }
 }
