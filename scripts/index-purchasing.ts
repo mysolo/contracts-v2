@@ -64,6 +64,16 @@ const purchaseIndex = async (
 
   const fee = totalCost.div(100);
 
+  //console.log(
+  //  buyToken,
+  //  totalCost,
+  //  buyAmount,
+  //  quotes[0].data.to,
+  //  quotes.map((q: any) => ({
+  //    callData: q.data.data,
+  //    token: q.data.buyTokenAddress,
+  //  })));
+
   const tx = await indexContract.purchaseIndex(
     buyToken,
     totalCost,
@@ -85,7 +95,7 @@ const purchaseIndex = async (
 };
 
 if (isCallingScript(__filename))
-  purchaseIndex(addresses.index, addresses.indexToken, expandTo18Decimals(4))
+  purchaseIndex(addresses.indexes.LI, addresses.tokens.LI, expandTo18Decimals(4))
     .then(() => process.exit(0))
     .catch((err) => {
       console.error(err);

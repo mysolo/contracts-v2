@@ -5,6 +5,7 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 import "./Index.sol";
 import "../models/IndexComposition.sol";
+import "hardhat/console.sol";
 
 contract IndexPriceEstimator {
   IUniswapV2Router02 public router;
@@ -23,15 +24,25 @@ contract IndexPriceEstimator {
   {
     IndexComposition[] memory composition = index.getComposition();
     uint256 totalPrice = 0;
-    address[] memory route = new address[](3);
-    route[0] = BUSD;
-    route[1] = WBNB;
+    address[] memory fullRoute = new address[](3);
+    fullRoute[0] = BUSD;
+    fullRoute[1] = WBNB;
+    address[] memory busdBnbRoute = new address[](2);
+    busdBnbRoute[0] = BUSD;
+    busdBnbRoute[1] = WBNB;
 
     for (uint32 i = 0; i < composition.length; i++) {
-      route[2] = composition[i].token;
+      address token = composition[i].token;
+      fullRoute[2] = token;
+
+      if (token == BUSD) {
+        totalPrice += composition[i].amount * amount;
+        continue;
+      }
+
       uint256[] memory amounts = router.getAmountsIn(
         (composition[i].amount * amount) / 1e18,
-        route
+        token == WBNB ? busdBnbRoute : fullRoute
       );
       totalPrice += amounts[0];
     }

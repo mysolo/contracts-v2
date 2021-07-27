@@ -6,9 +6,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 abstract contract AIndexDirectory is Ownable {
     AIndex[] _indexes;
 
+    event IndexRegistered(address index);
+    event IndexUnregistered(address index);
+
     function registerIndex(address indexAddress) public virtual onlyOwner {
         _indexes.push(AIndex(indexAddress));
-        //event
+        emit IndexRegistered(indexAddress);
     }
 
     function unregisterIndex(address indexAddress) public virtual onlyOwner {
@@ -18,6 +21,6 @@ abstract contract AIndexDirectory is Ownable {
                 _indexes.pop();
             }
         }
-        //event
+        emit IndexUnregistered(indexAddress);
     }
 }
