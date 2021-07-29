@@ -38,15 +38,17 @@ contract IndexMigration is Ownable {
         );
         uint256 amountToSell = indexV1.balanceOf(msg.sender);
         indexV1.transferFrom(msg.sender, address(this), amountToSell);
+
+        uint256 balanceBefore = address(this).balance;
         uint256 ethAmount = indexV1.sellIndex(amountToSell, minAmountSell);
         ethAmount += (ethAmount * _cashbackPerThousand) / 1000;
         require(
             address(this).balance >= ethAmount,
             "IndexMigration : Insufficent balance to cashback the user."
         );
-        indexV2.purchaseIndex(
+        indexV2.purchaseIndex{ value:  ethAmount }(
             IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE),
-            ethAmount,
+            ethAmount * 99 / 100,
             minAmountReceive,
             swapTarget,
             tokenOrders
@@ -74,5 +76,8 @@ contract IndexMigration is Ownable {
             tokenOrders
         );
         _cashbackPerThousand = savedCashback;
+    }
+
+    receive() external payable {
     }
 }

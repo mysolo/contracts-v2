@@ -12,7 +12,7 @@ const addresses = getAddresses();
 export const _0xUrl = "https://bsc.api.0x.org";
 export const WETH = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 
-const getQuote = (
+export const getQuote = (
   sellToken: string,
   buyToken: string,
   buyAmount: BigNumber

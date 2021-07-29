@@ -33,9 +33,10 @@ const config: HardhatUserConfig = {
     hardhat: {
       accounts: process.env.MNEMONIC && accounts,
       forking: {
-        url: process.env.FORKMATIC
-          ? "https://matic.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882"
-          : "https://bsc-dataseed.binance.org/",
+	url: "https://bsc.getblock.io/mainnet/\?api_key\=92709805-c310-4657-970f-fe82aab71ac8",
+//        url: process.env.FORKMATIC
+//          ? "https://matic.getblock.io/mainnet/?api_key=660a41be-e64a-4519-a8b6-0a2d3dfc2882"
+//          : "https://bsc-dataseed.binance.org/",
         //        url: `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_ROPSTEN_API_KEY}`,
       },
       mining: {

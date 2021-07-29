@@ -1,6 +1,5 @@
 import { getAddresses, isCallingScript } from "./utils";
 
-import { ethers } from "hardhat";
 import { getContract } from "./contracts";
 
 const main = async (lpToken: string) => {
@@ -11,7 +10,7 @@ const main = async (lpToken: string) => {
 };
 
 if (isCallingScript(__filename))
-  main(getAddresses().tokens.LEV)
+  main(getAddresses().tokens.LI)
     .then(() => process.exit(0))
     .catch((error) => {
       console.error(error);
