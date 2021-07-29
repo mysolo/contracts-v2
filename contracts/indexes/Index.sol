@@ -138,6 +138,8 @@ contract Index is AIndex, ReentrancyGuard {
     TokenOrder[] calldata tokenOrders
   ) private returns (uint256) {
 
+    require(tokenOrders.length == composition.length, "WRONG_ORDERS_LENGTH");
+
       uint256 minIndexAmountPurchased /* todo: rename */
      = type(uint256).max;
 

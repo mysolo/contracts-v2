@@ -17,7 +17,15 @@ export const registerIndex = async (index: string) => {
 	return tx.wait();
 }
 
-registerIndex(getAddresses().indexes.LI);
+export const unregisterIndex = async (index: string) => {
+	const directory = await getContract("IndexDirectory", getAddresses().directory);
+	const tx = await directory.unregisterIndex(index);
+	console.log("done");
+	return tx.wait();
+}
+
+
+registerIndex(getAddresses().indexes.LI).then();
 
 
 if (false && isCallingScript(__filename))
