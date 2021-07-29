@@ -29,7 +29,7 @@
     "topChef": "0x77bB9731Bc36f3c30FA134ca48672a635Dbc7Dd7",
     "directory": "0xAB8b5a5282dbC064CE42aC2A3bb4a359bdA68102",
     "priceEstimator": "0x071051e6B95A1D1bE2C84eB9a0c9Be8fF28Fc3E2",
-    "indexMigration": "",
+    "indexMigration": "0x606CCD4a55099DF6788E9D935AD93640F1c23ee3",
     "tokens": {
       "WETH": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
       "LEV": "0x304c62b5B030176F8d328d3A01FEaB632FC929BA",
